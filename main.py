@@ -32,7 +32,7 @@ def normalize(text: str) -> str:
 
 class PriceTrackerBot:
     def __init__(self):
-        os.makedirs("/data", exist_ok=True)
+        os.makedirs("/var/data", exist_ok=True)
         load_dotenv()
         self.rainforest_api_key = os.getenv("RAINFOREST_API_KEY")
         self.token = os.getenv("TELEGRAM_TOKEN")
@@ -40,7 +40,7 @@ class PriceTrackerBot:
         if not self.token or not self.rainforest_api_key:
             raise ValueError("Missing required environment variables")
 
-        self.db_conn = sqlite3.connect("/data/price_tracker.db")
+        self.db_conn = sqlite3.connect("/var/data/price_tracker.db")
         self.user_manager = UserManager(self.db_conn)
         self.rainforest = RainforestAPI(self.rainforest_api_key)
         self.application = Application.builder().token(self.token).build()
