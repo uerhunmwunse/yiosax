@@ -32,6 +32,7 @@ def normalize(text: str) -> str:
 
 class PriceTrackerBot:
     def __init__(self):
+        os.makedirs("/data", exist_ok=True)
         load_dotenv()
         self.rainforest_api_key = os.getenv("RAINFOREST_API_KEY")
         self.token = os.getenv("TELEGRAM_TOKEN")
@@ -39,7 +40,7 @@ class PriceTrackerBot:
         if not self.token or not self.rainforest_api_key:
             raise ValueError("Missing required environment variables")
 
-        self.db_conn = sqlite3.connect("price_tracker.db")
+        self.db_conn = sqlite3.connect("/data/price_tracker.db")
         self.user_manager = UserManager(self.db_conn)
         self.rainforest = RainforestAPI(self.rainforest_api_key)
         self.application = Application.builder().token(self.token).build()
@@ -267,7 +268,7 @@ class PriceTrackerBot:
                 "Hmm I'm not sure I understand .\n\n"
                 "You can try `/help` to see available commands"
             )
-            await self._handle_help(update, context)
+            # await self._handle_help(update, context)
 
     async def _ask_for_mobile_manufacturer(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         choose = [["Skip Manufacturer"]]
@@ -856,7 +857,7 @@ class PriceTrackerBot:
                 await self._check_all_prices()
             except Exception as e:
                 self.logger.error(f"Price check failed: {str(e)}")
-            await asyncio.sleep(300)
+            await asyncio.sleep(3600)
 
     def _clean_mobile_text(self, text):
         if not text:
